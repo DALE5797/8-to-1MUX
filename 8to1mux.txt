@@ -1,0 +1,107 @@
+
+-----------------------------------main file----------------------------
+----------------------------------------------------------------------------------
+--Author: Christopher Labra
+--Date: 10-3-18 
+--
+----------------------------------------------------------------------------------
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+library work;
+
+entity mux8to1 is
+    Port ( S2,S1,S0 : IN STD_LOGIC; --inputs from the switches. Used for select in the MUX
+           a, b, c, d, e, f, g, h  : IN STD_LOGIC; --inputs from the switches
+           R: OUT STD_LOGIC); --output
+end mux8to1;
+
+architecture Struct of mux8to1 is
+COMPONENT mux4to1 --the 4 to 1 MUX
+port( A, B, C, D : IN STD_LOGIC;
+      S1, S0 : IN STD_LOGIC;
+      R : OUT STD_LOGIC);      
+END COMPONENT;
+
+COMPONENT mux2to1 --the 4 to 1 MUX
+port( A, B : IN STD_LOGIC;
+      S2 : IN STD_LOGIC;
+      R : OUT STD_LOGIC);      
+END COMPONENT;
+signal ta,tb,tc,td,te,tf,tg,th,tS0,tS1,tS2 : STD_LOGIC;
+signal temp1, temp2, temp3 : STD_LOGIC;
+
+BEGIN
+    ta <= a;
+    tb <= b;
+    tc <= c;
+    td <= d;
+    te <= e;
+    tf <= f;
+    tg <= g;
+    th <= h;
+    tS0 <= S0;
+    tS1 <= S1;
+    tS2 <= S2;
+
+m1: mux4to1 port map(A => ta, B => tb, C => tc, D => td, S1 => tS1, S0 => tS0, R => temp1);
+m2: mux4to1 port map(A => te, B => tf, C => tg, D => th, S1 => tS1, S0 => tS0, R => temp2);
+m3: mux2to1 port map(A => temp1, B => temp2, S2 => tS2, R => temp3);
+R <= temp3;
+
+end Struct;
+
+
+
+
+---------------------------------4 to 1 MUX-----------------------------------------
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+entity mux4to1 is
+    Port ( A, B, C, D : in STD_LOGIC;
+           S1, S0 : in STD_LOGIC;
+           R : out STD_LOGIC);
+end mux4to1;
+
+architecture Behavioral of mux4to1 is
+
+begin
+MUX4to1: PROCESS(A, B, C, D, S1, S0) IS --4 to 1 MUX
+    BEGIN
+        IF(S1 = '0' AND S0 = '0') THEN
+            R <= A;
+        ELSIF(S1 = '0' AND S0 = '1') THEN
+            R <= B;
+        ELSIF(S1 = '1' AND S0 = '0') THEN
+            R <= C;
+        ELSIF(S1 = '1' AND S0 = '1') THEN
+            R <= D;
+        END IF;
+    END PROCESS;
+end Behavioral;
+
+
+
+
+----------------------------------------------2 to 1 MUX--------------------------------------------------
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+entity mux2to1 is
+    Port ( A, B : in STD_LOGIC;
+           S2 : in STD_LOGIC;
+           R : out STD_LOGIC);
+end mux2to1;
+
+architecture Behavioral of mux2to1 is
+
+begin
+    MUX2to1: PROCESS (A, B, S2) IS --2 to 1 MUX
+    BEGIN
+        IF(S2 = '0') THEN
+            R <= A;
+        ELSIF(S2 = '1') THEN
+            R <= B;
+        END IF;
+    END PROCESS;
+end Behavioral;
